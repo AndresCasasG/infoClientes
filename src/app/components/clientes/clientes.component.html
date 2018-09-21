@@ -1,0 +1,170 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card border border-info rounded">
+        <!-- <div class="card-header">
+          Clientes
+        </div> -->
+
+        <div class="card-body">
+          <h4 class="card-title">Clientes</h4>
+          <div class="col-md-12 table-responsive border border-info pt-2">
+            <button type="button" class="btn btn-success rounded-circle mb-3" (click)="getPaises(clienteModal, 'lg')">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </button>
+
+            <table class="table table-sm table-dark table-bordered table-hover" *ngIf="!noClientes">
+              <thead>
+                <tr class="table-active">
+                  <th scope="col">Nit</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Ciudad</th>
+                  <th scope="col">Cupo</th>
+                  <th scope="col">Saldo</th>
+                  <th scope="col">Porcentaje</th>
+                  <th scope="col" class="text-center">Controles</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cliente of clientes[0], let i = index">
+                  <td scope="row">{{cliente.Nit}}</td>
+                  <td>{{cliente.Nombre}}</td>
+                  <td>{{cliente.Ciudad.Nombre}}</td>
+                  <td>{{cliente.Cupo}}</td>
+                  <td>{{cliente.SaldoCupo}}</td>
+                  <td>{{cliente.PorcentajeVisita}}</td>
+                  <td class="col-controls text-center">
+                    <button type="button" class="btn btn-warning rounded-circle m-1" (click)="getCliente(cliente.Id, clienteModal)">
+                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger rounded-circle m-1" (click)="getCliente(cliente.Id, eliminarModal, 'sm')">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="alert alert-info" role="alert" *ngIf="noClientes">
+            No existen clientes en este momento.
+          </div>
+
+          <ng-template #eliminarModal #content>
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">Eliminar Cliente</h4>
+              <button type="button" class="close" aria-label="Close" (click)="close()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                  Realmente desea eliminar el registro?
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger rounded-circle" (click)="close()">
+                <i class="fa fa-ban" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-success rounded-circle" (click)="deleteCliente()">
+                <i class="fa fa-check" aria-hidden="true"></i>
+              </button>
+            </div>
+          </ng-template>
+
+          <ng-template #clienteModal #content>
+            <!-- <div class="modal fade bd-example-modal-lg" id="clienteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true" data-backdrop="static"> -->
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">Nuevo Cliente</h4>
+              <button type="button" class="close" aria-label="Close" (click)="close()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
+                <div class="row">
+                  <div class="form-group col-md-6">
+                    <label for="nit" class="col-form-label">Nit:</label>
+                    <input [(ngModel)]="nitCliente" type="text" class="form-control form-control-sm" id="nit">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Nombre:</label>
+                    <input [(ngModel)]="nombreCliente" type="text" class="form-control form-control-sm" id="nombre">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="direccion" class="col-form-label">Direccion:</label>
+                    <input [(ngModel)]="direccionCliente" type="text" class="form-control form-control-sm" id="direccion">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="telefono" class="col-form-label">Teléfono:</label>
+                    <input [(ngModel)]="telefonoCliente" type="text" class="form-control form-control-sm" id="telefono">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Pais:</label>
+                    <select [(ngModel)]="paisCliente" class="form-control form-control-sm" #pais (change)="getDepartamentosPaisId(pais.value)">
+                      <option value="0">Seleccione un Pais</option>
+                      <option [value]="pais.Id" *ngFor="let pais of paises[0]">{{pais.Nombre}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Departamento:</label>
+                    <select [(ngModel)]="departamentoCliente" class="form-control form-control-sm" #departamento
+                      (change)="getCiudadesDepartamentoId(departamento.value)">
+                      <option value="0">Seleccione un Departamento</option>
+                      <option [value]="departamento.Id" *ngFor="let departamento of departamentos[0]">{{departamento.Nombre}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Ciudad:</label>
+                    <select [(ngModel)]="ciudadCliente" class="form-control form-control-sm">
+                      <option value="0">Seleccione una Ciudad</option>
+                      <option [value]="ciudad.Id" *ngFor="let ciudad of ciudades[0]">{{ciudad.Nombre}}</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Cupo:</label>
+                    <input [(ngModel)]="cupoCliente" type="text" class="form-control form-control-sm" id="cupo">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Saldo Cupo:</label>
+                    <input [(ngModel)]="saldoCupoCliente" type="text" class="form-control form-control-sm" id="SaldoCupo"
+                      readonly>
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="nombre" class="col-form-label">Porcentaje Visita:</label>
+                    <input [(ngModel)]="porcentajeCliente" type="text" class="form-control form-control-sm" id="porcentajeVisita">
+                  </div>
+
+                  <div class="col-md-12" *ngIf="errorHTTP">
+                    <div class="alert alert-danger" role="alert">
+                      <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let error of errores">
+                          {{error}}.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger rounded-circle" (click)="close()">
+                <i class="fa fa-ban" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-success rounded-circle" (click)="putCliente()" *ngIf="editar">
+                <i class="fa fa-check" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-success rounded-circle" (click)="postCliente()" *ngIf="!editar">
+                <i class="fa fa-check" aria-hidden="true"></i>
+              </button>
+            </div>
+            <!-- </div> -->
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
